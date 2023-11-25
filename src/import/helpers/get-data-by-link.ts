@@ -2,8 +2,10 @@ import { mkdir, exists } from "node:fs/promises";
 import { ImportDataRaw } from "../types/import-data.type";
 import { CACHE_FOLDER, SOURCE_APP_URL } from "../config";
 
-export const getDataByLink = async (url: string): Promise<ImportDataRaw> => {
-  const id = url.match(/public\/([^\/]+)/)?.[1];
+export const getDataByLink = async (
+  url: string
+): Promise<{ data: ImportDataRaw; size: number }> => {
+  const id = url.match(/public\/([^/]+)/)?.[1];
 
   if (!id) {
     throw new Error("Id not found");
@@ -23,5 +25,7 @@ export const getDataByLink = async (url: string): Promise<ImportDataRaw> => {
     return data;
   }
 
-  return await cache.json();
+  const data = await cache.json();
+
+  return { data, size: cache.size };
 };
