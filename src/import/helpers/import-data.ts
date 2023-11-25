@@ -48,14 +48,16 @@ export const importData = async (url: string) => {
 
   await Bun.write(outputPath, JSON.stringify(outputData));
 
+  const inputSize = dataSize + inputAvatarsSize;
   const outputSize = Bun.file(outputPath).size;
 
   const p2 = performance.now();
+  const duration = ((p2 - p1) / 1000).toFixed(2);
+
   console.log(
-    "End data import in",
-    ((p2 - p1) / 1000).toFixed(2),
-    "s \n",
-    `${filesize(dataSize + inputAvatarsSize)} -> ${filesize(outputSize)}`
+    `End data import in ${duration}s`,
+    `[${filesize(inputSize)} -> ${filesize(outputSize)}]`,
+    `(${(inputSize / outputSize).toFixed(0)}x smaller)`
   );
 
   return outputData;
