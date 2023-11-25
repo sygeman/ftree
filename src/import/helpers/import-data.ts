@@ -3,6 +3,7 @@ import { getDataByLink } from "./get-data-by-link";
 import { importAvatar } from "./import-avatar";
 import { formatTree } from "./format-tree";
 import { filesize } from "filesize";
+import { SOURCE_AVATARS_URL } from "../config";
 
 export const importData = async (url: string) => {
   console.log("Start data import");
@@ -20,8 +21,8 @@ export const importData = async (url: string) => {
   const importPeople = await Promise.all(
     data.people.map(async (people) => {
       const avatar = await importAvatar(
-        people.avatar,
-        `${dataFolder}/${people._id}`,
+        `${SOURCE_AVATARS_URL}${people.avatar}`,
+        people._id,
         "png",
         "webp"
       );
@@ -37,16 +38,15 @@ export const importData = async (url: string) => {
     })
   );
 
-  await Bun.write(
-    outputPath,
-    JSON.stringify({
-      _id: data._id,
-      title: data.title.trim(),
-      lastPublishDate: data.lastPublishDate,
-      tree: formatTree(data.data),
-      people: importPeople,
-    })
-  );
+  const outputData = {
+    _id: data._id,
+    title: data.title.trim(),
+    lastPublishDate: data.lastPublishDate,
+    tree: formatTree(data.data),
+    people: importPeople,
+  };
+
+  await Bun.write(outputPath, JSON.stringify(outputData));
 
   const outputSize = Bun.file(outputPath).size;
 
@@ -57,4 +57,6 @@ export const importData = async (url: string) => {
     "s \n",
     `${filesize(dataSize + inputAvatarsSize)} -> ${filesize(outputSize)}`
   );
+
+  return outputData;
 };

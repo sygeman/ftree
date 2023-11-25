@@ -1,4 +1,3 @@
-import { mkdir, exists } from "node:fs/promises";
 import { ImportDataRaw } from "../types/import-data.type";
 import { CACHE_FOLDER, SOURCE_APP_URL } from "../config";
 
@@ -11,17 +10,14 @@ export const getDataByLink = async (
     throw new Error("Id not found");
   }
 
-  if (!(await exists(CACHE_FOLDER))) {
-    await mkdir(CACHE_FOLDER);
-  }
-
-  const cache = Bun.file(`${CACHE_FOLDER}/${id}.json`);
+  const cacheKey = `data-${id}`;
+  const cache = Bun.file(`${CACHE_FOLDER}/${cacheKey}.json`);
 
   if (cache.size === 0) {
     const dataURL = `${SOURCE_APP_URL}api/published/${id}`;
     const query = await fetch(dataURL);
     const data = await query.json();
-    await Bun.write(`${CACHE_FOLDER}/${id}.json`, JSON.stringify(data));
+    await Bun.write(`${CACHE_FOLDER}/${cacheKey}.json`, JSON.stringify(data));
     return data;
   }
 
