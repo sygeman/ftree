@@ -18,7 +18,7 @@ export const getDataByLink = async (
     const query = await fetch(dataURL);
     const data = await query.json();
     await Bun.write(`${CACHE_FOLDER}/${cacheKey}.json`, JSON.stringify(data));
-    return data;
+    return { data, size: cache.size };
   }
 
   const data = await cache.json();
