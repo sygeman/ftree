@@ -1,4 +1,4 @@
-import dataJson from "../data/641f24449a150cba09f92d5b.json";
+import dataJson from "./641f24449a150cba09f92d5b.json";
 import { Data, TreeNode } from "./types";
 
 const data = dataJson as Data;
